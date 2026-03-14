@@ -77,9 +77,6 @@ export default function PasswordGate({ children }: { children: ReactNode }) {
           )}
         </form>
 
-        <p className="text-center text-text-muted text-xs mt-6">
-          Powered by Texas Hotel Management
-        </p>
       </div>
 
     </div>

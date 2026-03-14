@@ -8,11 +8,11 @@ import {
   type ActivityItem,
   type AttentionItem,
 } from '../data/mockData'
-import { agentMap } from '../data/agents'
+import { agents, agentMap } from '../data/agents'
 import { usePageTitle } from '../hooks/usePageTitle'
 import LoadingSkeleton from '../components/LoadingSkeleton'
 import { AddDealModal, UploadDocModal, GenerateReportModal } from '../components/QuickActionModals'
-import { Activity, FileText, AlertTriangle, TrendingUp, Clock, ChevronRight, Plus, Upload, BarChart3 } from 'lucide-react'
+import { Activity, FileText, AlertTriangle, TrendingUp, Clock, ChevronRight, Plus, Upload, BarChart3, Search, Eye, Globe, Shield, Calculator, Lightbulb, Bot } from 'lucide-react'
 
 const statCards = [
   { label: 'Active Deals', value: quickStats.activeDeals, icon: TrendingUp },
@@ -33,6 +33,16 @@ const activityDotColor: Record<ActivityItem['type'], string> = {
   pipeline: 'bg-accent',
   analysis: 'bg-accent-dim',
   alert: 'bg-warning',
+}
+
+const agentIconMap: Record<string, typeof Search> = {
+  Search, Eye, Globe, Shield, Calculator, Lightbulb,
+}
+
+const statusLabel: Record<string, { text: string; dot: string }> = {
+  active: { text: 'Active', dot: 'bg-accent' },
+  idle: { text: 'Idle', dot: 'bg-text-muted' },
+  learning: { text: 'Learning', dot: 'bg-warning' },
 }
 
 function urgencyBadge(urgency: AttentionItem['urgency']) {
@@ -206,6 +216,54 @@ export default function CommandCenter() {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* AI Agents */}
+        <div className="mt-6">
+          <div className="rounded-xl border border-border bg-bg-card">
+            <div className="flex items-center gap-2 border-b border-border px-5 py-4">
+              <Bot className="h-4 w-4 text-accent" />
+              <h2 className="text-sm font-medium text-text-primary">AI Agents</h2>
+              <span className="ml-auto text-xs text-text-muted">
+                {agents.filter((a) => a.status === 'active').length} of {agents.length} active
+              </span>
+            </div>
+            <div className="grid gap-4 p-5 grid-cols-2 xl:grid-cols-3">
+              {agents.map((agent) => {
+                const Icon = agentIconMap[agent.icon] ?? Bot
+                const st = statusLabel[agent.status]
+                return (
+                  <div
+                    key={agent.id}
+                    className="group rounded-lg border border-border bg-bg-secondary p-4 transition-colors hover:border-border-light"
+                  >
+                    <div className="mb-3 flex items-start gap-3">
+                      <div
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+                        style={{ backgroundColor: `${agent.color}15` }}
+                      >
+                        <Icon className="h-4 w-4" style={{ color: agent.color }} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-sm font-medium text-text-primary">{agent.name}</p>
+                          <div className="flex shrink-0 items-center gap-1.5">
+                            <span className={`h-1.5 w-1.5 rounded-full ${st.dot}`} />
+                            <span className="text-[10px] text-text-muted">{st.text}</span>
+                          </div>
+                        </div>
+                        <p className="text-xs text-text-muted">{agent.role}</p>
+                      </div>
+                    </div>
+                    <p className="text-xs leading-relaxed text-text-secondary">{agent.description}</p>
+                    <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+                      <span className="text-[10px] text-text-muted">{agent.tasksCompleted} tasks completed</span>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>
